@@ -13,6 +13,7 @@ import (
 	"github.com/stellar/go/support/errors"
 	"github.com/stellar/go/xdr"
 	"golang.org/x/net/context"
+	b64 "encoding/base64"
 )
 
 // HomeDomainForAccount returns the home domain for the provided strkey-encoded
@@ -53,6 +54,12 @@ func (c *Client) LoadAccount(accountID string) (account Account, err error) {
 	}
 
 	err = decodeResponse(resp, &account)
+	for k, v := range account.Data {
+		s, err := b64.StdEncoding.DecodeString(string(v))
+		if err == nil {
+			account.Data[k] = string(s)
+		}
+	}
 	return
 }
 
